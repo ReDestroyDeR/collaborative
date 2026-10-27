@@ -1,7 +1,7 @@
 namespace StudentAccounting.Dal.Entities;
 
 /// <summary>Факультет — структурное подразделение вуза.</summary>
-public class Faculty
+public class Faculty : IEntity
 {
     public int Id { get; set; }
     /// <summary>Полное наименование факультета.</summary>

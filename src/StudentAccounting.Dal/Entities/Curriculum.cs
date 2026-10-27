@@ -1,7 +1,7 @@
 namespace StudentAccounting.Dal.Entities;
 
 /// <summary>Строка учебного плана: какая дисциплина читается какой группе.</summary>
-public class Curriculum
+public class Curriculum : IEntity
 {
     public int Id { get; set; }
     public int GroupId { get; set; }

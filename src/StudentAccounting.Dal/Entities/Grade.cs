@@ -1,7 +1,7 @@
 namespace StudentAccounting.Dal.Entities;
 
 /// <summary>Оценка (результат аттестации) студента по дисциплине.</summary>
-public class Grade
+public class Grade : IEntity
 {
     public int Id { get; set; }
     public int StudentId { get; set; }

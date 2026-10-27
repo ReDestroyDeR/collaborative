@@ -1,7 +1,7 @@
 namespace StudentAccounting.Dal.Entities;
 
 /// <summary>Учебная группа студентов.</summary>
-public class Group
+public class Group : IEntity
 {
     public int Id { get; set; }
     /// <summary>Номер группы, например ИТ-21.</summary>

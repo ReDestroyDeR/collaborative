@@ -1,7 +1,7 @@
 namespace StudentAccounting.Dal.Entities;
 
 /// <summary>Отметка о посещаемости студента на занятии.</summary>
-public class Attendance
+public class Attendance : IEntity
 {
     public int Id { get; set; }
     public int StudentId { get; set; }

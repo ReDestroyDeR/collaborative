@@ -1,7 +1,7 @@
 namespace StudentAccounting.Dal.Entities;
 
 /// <summary>Занятие расписания (пара).</summary>
-public class Lesson
+public class Lesson : IEntity
 {
     public int Id { get; set; }
     public int DisciplineId { get; set; }

@@ -1,7 +1,7 @@
 namespace StudentAccounting.Dal.Entities;
 
 /// <summary>Преподаватель.</summary>
-public class Teacher
+public class Teacher : IEntity
 {
     public int Id { get; set; }
     public string LastName { get; set; } = string.Empty;

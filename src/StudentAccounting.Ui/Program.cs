@@ -1,55 +1,76 @@
 using StudentAccounting.Bll.Services;
 using StudentAccounting.Dal.Entities;
+using StudentAccounting.Dal.Repositories;
 using StudentAccounting.Dal.Storage;
 
 namespace StudentAccounting.Ui;
 
 /// <summary>
 /// Консольный пользовательский интерфейс (слой UI).
-/// Демонстрирует работу с бизнес-логикой через слой BLL.
+/// Собирает зависимости (репозитории и сервисы) и демонстрирует работу
+/// паттерна «Репозиторий» и сериализации в JSON.
 /// </summary>
 public static class Program
 {
     public static void Main()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
-        var context = UniversityContext.CreateSeeded();
-        var studentService = new StudentService(context);
+        var dataDir = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "data");
+        dataDir = Path.GetFullPath(dataDir);
+        Directory.CreateDirectory(dataDir);
 
-        Console.WriteLine("=== ИС «Учёт студентов» — демонстрация работы слоёв DAL/BLL/UI ===");
+        // ---- Компоновка зависимостей: DAL -> BLL -> UI ----
+        var studentRepository = new InMemoryRepository<Student>(UniversityContext.CreateSeeded().Students);
+        var groupRepository = new InMemoryRepository<Group>(UniversityContext.CreateSeeded().Groups);
+        var gradeRepository = new InMemoryRepository<Grade>(UniversityContext.CreateSeeded().Grades);
+        var attendanceRepository = new InMemoryRepository<Attendance>(UniversityContext.CreateSeeded().Attendances);
+
+        var studentService = new StudentService(studentRepository, groupRepository);
+        var progressService = new ProgressService(studentRepository, gradeRepository, attendanceRepository);
+
+        Console.WriteLine("=== ЛР2. Паттерн «Репозиторий»: DAL (InMemoryRepository) -> BLL (сервисы) -> UI ===");
         Console.WriteLine();
 
-        Console.WriteLine("1. Все студенты:");
+        Console.WriteLine("1. Все студенты (через IRepository<Student>):");
         foreach (var s in studentService.GetAll())
-            Console.WriteLine($"   {s.Id}. {s.FullName()} | гр. {s.Group?.Name} | {s.RecordBookNumber} | {s.Status}");
+            Console.WriteLine($"   {s.Id}. {s.FullName()} | гр. {s.Group?.Name ?? groupRepository.GetById(s.GroupId)?.Name} | {s.RecordBookNumber} | {s.Status}");
         Console.WriteLine();
 
-        Console.WriteLine("2. Студенты группы ИТ-21:");
-        foreach (var s in studentService.GetByGroup(1))
-            Console.WriteLine($"   {s.LastName} {s.FirstName}");
-        Console.WriteLine();
-
-        Console.WriteLine("3. Поиск по фамилии «Пет»:");
-        foreach (var s in studentService.SearchByLastName("Пет"))
-            Console.WriteLine($"   {s.FullName()}");
-        Console.WriteLine();
-
-        Console.WriteLine("4. Успеваемость и посещаемость:");
-        foreach (var s in studentService.GetAll())
-            Console.WriteLine($"   {s.LastName,-12} ср. балл = {studentService.GetAverageGrade(s.Id):F2}, посещаемость = {studentService.GetAttendanceRate(s.Id):F0}%");
-        Console.WriteLine();
-
-        Console.WriteLine("5. Средний балл по группам:");
-        foreach (var g in context.Groups)
-            Console.WriteLine($"   {g.Name,-8} ср. балл = {studentService.GetGroupAverageGrade(g.Id):F2}");
-        Console.WriteLine();
-
-        Console.WriteLine("6. Зачисление нового студента в группу ИТ-21:");
+        Console.WriteLine("2. CRUD через репозиторий:");
         var created = studentService.Enroll("Новиков", "Игорь", "Анатольевич", "novikov@university.ru", new DateTime(2005, 5, 17), 1);
-        Console.WriteLine($"   Зачислен: {created.FullName()}, студенческий № {created.RecordBookNumber}");
+        Console.WriteLine($"   Create: зачислен {created.FullName()}, № {created.RecordBookNumber}, Id = {created.Id}");
+        created.Phone = "+7-901-555-66-77";
+        studentRepository.Update(created);
+        Console.WriteLine($"   Update: у студента Id={created.Id} обновлён телефон: {studentRepository.GetById(created.Id)!.Phone}");
+        Console.WriteLine($"   Read:   GetByGroup(1) -> {string.Join(", ", studentService.GetByGroup(1).Select(s => s.LastName))}");
+        Console.WriteLine($"   Delete: удаление Id={created.Id} -> {studentRepository.Delete(created.Id)}, повторно -> {studentRepository.Delete(created.Id)}");
         Console.WriteLine();
 
-        Console.WriteLine("7. Проверка бизнес-правил (некорректный e-mail):");
+        Console.WriteLine("3. Перевод и отчисление:");
+        Console.WriteLine($"   Перевод студента Id=3 в группу ЭК-21: {studentService.Transfer(3, 3)}");
+        Console.WriteLine($"   Отчисление студента Id=3: {studentService.Expel(3, "по собственному желанию")}");
+        Console.WriteLine();
+
+        Console.WriteLine("4. Успеваемость и посещаемость (ProgressService):");
+        foreach (var s in studentService.GetAll())
+            Console.WriteLine($"   {s.FullName(),-28} ср. балл = {progressService.GetAverageGrade(s.Id):F2}, посещаемость = {progressService.GetAttendanceRate(s.Id):F0}%, отличник = {progressService.IsExcellent(s.Id)}");
+        Console.WriteLine();
+
+        Console.WriteLine("5. Сериализация в JSON (JsonRepository<Student>):");
+        var jsonPath = Path.Combine(dataDir, "students.json");
+        var jsonRepository = new JsonRepository<Student>(jsonPath);
+        foreach (var s in studentService.GetAll())
+            jsonRepository.Add(s);
+        jsonRepository.Save();
+        Console.WriteLine($"   Данные сохранены в файл: {jsonPath} ({new FileInfo(jsonPath).Length} байт)");
+
+        var reloaded = new JsonRepository<Student>(jsonPath);
+        Console.WriteLine($"   Десериализовано из файла: {reloaded.GetAll().Count} студентов");
+        foreach (var s in reloaded.Find(s => s.Status == StudentStatus.Active).Take(3))
+            Console.WriteLine($"     - {s.FullName()} ({s.RecordBookNumber}), зачислен {s.EnrolledDate:dd.MM.yyyy}");
+        Console.WriteLine();
+
+        Console.WriteLine("6. Проверка бизнес-правил (некорректный e-mail):");
         try
         {
             studentService.Enroll("Тестов", "Тест", null, "некорректный-адрес", new DateTime(2005, 1, 1), 1);

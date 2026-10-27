@@ -1,7 +1,7 @@
 namespace StudentAccounting.Dal.Entities;
 
 /// <summary>Дисциплина (учебный предмет).</summary>
-public class Discipline
+public class Discipline : IEntity
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

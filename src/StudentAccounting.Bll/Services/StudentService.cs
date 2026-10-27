@@ -1,85 +1,96 @@
 using StudentAccounting.Dal.Entities;
-using StudentAccounting.Dal.Storage;
+using StudentAccounting.Dal.Repositories;
 
 namespace StudentAccounting.Bll.Services;
 
 /// <summary>
 /// Бизнес-логика работы со студентами (слой BLL).
-/// Инкапсулирует правила предметной области и обращается к слою DAL.
+/// Сервис зависит только от абстракции IRepository&lt;Student&gt; и не знает,
+/// как физически организовано хранилище (слой DAL).
 /// </summary>
 public class StudentService
 {
-    private readonly UniversityContext _context;
+    private readonly IRepository<Student> _students;
+    private readonly IRepository<Group> _groups;
 
-    public StudentService(UniversityContext context) => _context = context;
+    public StudentService(IRepository<Student> students, IRepository<Group> groups)
+    {
+        _students = students ?? throw new ArgumentNullException(nameof(students));
+        _groups = groups ?? throw new ArgumentNullException(nameof(groups));
+    }
 
     /// <summary>Возвращает список всех студентов.</summary>
-    public IReadOnlyList<Student> GetAll() => _context.Students;
+    public IReadOnlyList<Student> GetAll() => _students.GetAll();
 
     /// <summary>Находит студента по идентификатору.</summary>
-    public Student? GetById(int id) =>
-        _context.Students.FirstOrDefault(s => s.Id == id);
+    public Student? GetById(int id) => _students.GetById(id);
 
     /// <summary>Возвращает студентов указанной группы.</summary>
     public IReadOnlyList<Student> GetByGroup(int groupId) =>
-        _context.Students.Where(s => s.GroupId == groupId).ToList();
+        _students.Find(s => s.GroupId == groupId);
 
     /// <summary>Ищет студентов по началу фамилии (без учёта регистра).</summary>
     public IReadOnlyList<Student> SearchByLastName(string lastNamePrefix) =>
-        _context.Students
-            .Where(s => s.LastName.StartsWith(lastNamePrefix, StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        _students.Find(s => s.LastName.StartsWith(lastNamePrefix, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>Зачисляет нового студента в группу с проверкой бизнес-правил.</summary>
     public Student Enroll(string lastName, string firstName, string? middleName,
         string email, DateTime birthDate, int groupId)
     {
-        if (string.IsNullOrWhiteSpace(lastName))
-            throw new ArgumentException("Фамилия не может быть пустой", nameof(lastName));
-        if (!email.Contains('@'))
-            throw new ArgumentException("Некорректный адрес электронной почты", nameof(email));
-        var group = _context.Groups.FirstOrDefault(g => g.Id == groupId)
+        ValidatePerson(lastName, firstName, email);
+        var group = _groups.GetById(groupId)
             ?? throw new InvalidOperationException($"Группа с Id={groupId} не найдена");
 
-        var number = _context.Students.Count(s => s.GroupId == groupId) + 1;
+        var numberInGroup = _students.Find(s => s.GroupId == groupId).Count + 1;
         var student = new Student
         {
-            Id = _context.Students.Count == 0 ? 1 : _context.Students.Max(s => s.Id) + 1,
             LastName = lastName.Trim(),
             FirstName = firstName.Trim(),
             MiddleName = string.IsNullOrWhiteSpace(middleName) ? null : middleName.Trim(),
             Email = email.Trim(),
             BirthDate = birthDate,
-            RecordBookNumber = $"{group.Name}-{number:D3}",
+            RecordBookNumber = $"{group.Name}-{numberInGroup:D3}",
             EnrolledDate = DateTime.Today,
             Status = StudentStatus.Active,
-            GroupId = groupId,
-            Group = group
+            GroupId = groupId
         };
-        _context.Students.Add(student);
-        group.Students.Add(student);
-        return student;
+        return _students.Add(student);
     }
 
-    /// <summary>Вычисляет средний балл студента по всем оценкам.</summary>
-    public double GetAverageGrade(int studentId) =>
-        _context.Grades.Where(g => g.StudentId == studentId)
-            .Select(g => (double)g.Value)
-            .DefaultIfEmpty(0)
-            .Average();
-
-    /// <summary>Вычисляет средний балл группы по всем оценкам её студентов.</summary>
-    public double GetGroupAverageGrade(int groupId)
+    /// <summary>Переводит студента в другую группу.</summary>
+    public bool Transfer(int studentId, int targetGroupId)
     {
-        var studentIds = _context.Students.Where(s => s.GroupId == groupId).Select(s => s.Id).ToHashSet();
-        var grades = _context.Grades.Where(g => studentIds.Contains(g.StudentId)).ToList();
-        return grades.Count == 0 ? 0 : grades.Average(g => g.Value);
+        var student = _students.GetById(studentId);
+        var group = _groups.GetById(targetGroupId);
+        if (student is null || group is null) return false;
+
+        student.GroupId = group.Id;
+        student.RecordBookNumber = GenerateRecordBookNumber(student, group);
+        return _students.Update(student);
     }
 
-    /// <summary>Процент посещаемости студента за всё время.</summary>
-    public double GetAttendanceRate(int studentId)
+    /// <summary>Отчисляет студента (переводит в статус Expelled).</summary>
+    public bool Expel(int studentId, string reason)
     {
-        var records = _context.Attendances.Where(a => a.StudentId == studentId).ToList();
-        return records.Count == 0 ? 0 : 100.0 * records.Count(a => a.IsPresent) / records.Count;
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new ArgumentException("Необходимо указать причину отчисления", nameof(reason));
+        var student = _students.GetById(studentId);
+        if (student is null || student.Status == StudentStatus.Expelled) return false;
+
+        student.Status = StudentStatus.Expelled;
+        return _students.Update(student);
     }
+
+    private static void ValidatePerson(string lastName, string firstName, string email)
+    {
+        if (string.IsNullOrWhiteSpace(lastName))
+            throw new ArgumentException("Фамилия не может быть пустой", nameof(lastName));
+        if (string.IsNullOrWhiteSpace(firstName))
+            throw new ArgumentException("Имя не может быть пустым", nameof(firstName));
+        if (!email.Contains('@'))
+            throw new ArgumentException("Некорректный адрес электронной почты", nameof(email));
+    }
+
+    private string GenerateRecordBookNumber(Student student, Group group) =>
+        $"{group.Name}-{_students.Find(s => s.GroupId == group.Id).Count:D3}";
 }

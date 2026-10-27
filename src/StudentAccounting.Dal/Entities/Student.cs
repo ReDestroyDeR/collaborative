@@ -1,7 +1,7 @@
 namespace StudentAccounting.Dal.Entities;
 
 /// <summary>Студент — основной объект учёта.</summary>
-public class Student
+public class Student : IEntity
 {
     public int Id { get; set; }
     /// <summary>Фамилия.</summary>

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentAccounting.Bll", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentAccounting.Ui", "src\StudentAccounting.Ui\StudentAccounting.Ui.csproj", "{94A232AD-90BA-4EC0-ABC6-B019EF6065CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfacesDemo", "src\InterfacesDemo\InterfacesDemo.csproj", "{54F98C22-D56B-46CC-9EA4-DCEE7D4CF860}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,10 +34,15 @@ Global
 		{94A232AD-90BA-4EC0-ABC6-B019EF6065CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94A232AD-90BA-4EC0-ABC6-B019EF6065CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94A232AD-90BA-4EC0-ABC6-B019EF6065CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54F98C22-D56B-46CC-9EA4-DCEE7D4CF860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54F98C22-D56B-46CC-9EA4-DCEE7D4CF860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54F98C22-D56B-46CC-9EA4-DCEE7D4CF860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54F98C22-D56B-46CC-9EA4-DCEE7D4CF860}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F91219BB-F98F-409A-84DA-9BC419CC5D01} = {96F42F09-274F-421D-AF3D-E28D46149A8B}
 		{4C9A5638-2F65-43F0-8AD7-9E93F77C2411} = {96F42F09-274F-421D-AF3D-E28D46149A8B}
 		{94A232AD-90BA-4EC0-ABC6-B019EF6065CD} = {96F42F09-274F-421D-AF3D-E28D46149A8B}
+		{54F98C22-D56B-46CC-9EA4-DCEE7D4CF860} = {96F42F09-274F-421D-AF3D-E28D46149A8B}
 	EndGlobalSection
 EndGlobal
