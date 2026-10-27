@@ -79,5 +79,15 @@ public static class Program
         {
             Console.WriteLine($"   Исключение перехвачено: {ex.Message}");
         }
+        Console.WriteLine();
+
+        Console.WriteLine("7. Расчёт стипендии (исходный монолитный модуль ScholarshipReportGenerator):");
+        var legacy = new StudentAccounting.Bll.Legacy.ScholarshipReportGenerator(
+            studentService.GetAll().ToList(),
+            gradeRepository.GetAll().ToList());
+        Console.Write(legacy.GenerateTextReport(1));
+        Console.WriteLine();
+        Console.WriteLine("   CSV-вариант:");
+        Console.Write("   " + legacy.GenerateCsvReport(1).Replace("\n", "\n   "));
     }
 }

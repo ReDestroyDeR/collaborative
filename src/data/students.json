@@ -222,5 +222,229 @@
     },
     "Grades": [],
     "Attendances": []
+  },
+  {
+    "Id": 9,
+    "LastName": "Иванов",
+    "FirstName": "Пётр",
+    "MiddleName": "Сергеевич",
+    "BirthDate": "2004-03-12T00:00:00",
+    "RecordBookNumber": "ИТ-21-001",
+    "Email": "ivanov@university.ru",
+    "Phone": "\u002B7-900-111-22-33",
+    "EnrolledDate": "2022-09-01T00:00:00",
+    "Status": 0,
+    "GroupId": 1,
+    "Group": {
+      "Id": 1,
+      "Name": "ИТ-21",
+      "CreatedYear": 2022,
+      "FacultyId": 1,
+      "Faculty": {
+        "Id": 1,
+        "Name": "Факультет информационных технологий",
+        "ShortName": "ИТ",
+        "Departments": []
+      },
+      "Students": []
+    },
+    "Grades": [],
+    "Attendances": []
+  },
+  {
+    "Id": 10,
+    "LastName": "Петрова",
+    "FirstName": "Анна",
+    "MiddleName": "Игоревна",
+    "BirthDate": "2004-07-25T00:00:00",
+    "RecordBookNumber": "ИТ-21-002",
+    "Email": "petrova@university.ru",
+    "Phone": "\u002B7-900-222-33-44",
+    "EnrolledDate": "2022-09-01T00:00:00",
+    "Status": 0,
+    "GroupId": 1,
+    "Group": {
+      "Id": 1,
+      "Name": "ИТ-21",
+      "CreatedYear": 2022,
+      "FacultyId": 1,
+      "Faculty": {
+        "Id": 1,
+        "Name": "Факультет информационных технологий",
+        "ShortName": "ИТ",
+        "Departments": []
+      },
+      "Students": []
+    },
+    "Grades": [],
+    "Attendances": []
+  },
+  {
+    "Id": 11,
+    "LastName": "Сидоров",
+    "FirstName": "Олег",
+    "MiddleName": null,
+    "BirthDate": "2005-01-08T00:00:00",
+    "RecordBookNumber": "ЭК-21-002",
+    "Email": "sidorov@university.ru",
+    "Phone": null,
+    "EnrolledDate": "2023-09-01T00:00:00",
+    "Status": 2,
+    "GroupId": 3,
+    "Group": {
+      "Id": 2,
+      "Name": "ИТ-22",
+      "CreatedYear": 2023,
+      "FacultyId": 1,
+      "Faculty": {
+        "Id": 1,
+        "Name": "Факультет информационных технологий",
+        "ShortName": "ИТ",
+        "Departments": []
+      },
+      "Students": []
+    },
+    "Grades": [],
+    "Attendances": []
+  },
+  {
+    "Id": 12,
+    "LastName": "Кузнецова",
+    "FirstName": "Мария",
+    "MiddleName": "Андреевна",
+    "BirthDate": "2003-11-30T00:00:00",
+    "RecordBookNumber": "ЭК-21-001",
+    "Email": "kuznetsova@university.ru",
+    "Phone": "\u002B7-900-333-44-55",
+    "EnrolledDate": "2022-09-01T00:00:00",
+    "Status": 1,
+    "GroupId": 3,
+    "Group": {
+      "Id": 3,
+      "Name": "ЭК-21",
+      "CreatedYear": 2022,
+      "FacultyId": 2,
+      "Faculty": {
+        "Id": 2,
+        "Name": "Экономический факультет",
+        "ShortName": "ЭК",
+        "Departments": []
+      },
+      "Students": []
+    },
+    "Grades": [],
+    "Attendances": []
+  },
+  {
+    "Id": 13,
+    "LastName": "Иванов",
+    "FirstName": "Пётр",
+    "MiddleName": "Сергеевич",
+    "BirthDate": "2004-03-12T00:00:00",
+    "RecordBookNumber": "ИТ-21-001",
+    "Email": "ivanov@university.ru",
+    "Phone": "\u002B7-900-111-22-33",
+    "EnrolledDate": "2022-09-01T00:00:00",
+    "Status": 0,
+    "GroupId": 1,
+    "Group": {
+      "Id": 1,
+      "Name": "ИТ-21",
+      "CreatedYear": 2022,
+      "FacultyId": 1,
+      "Faculty": {
+        "Id": 1,
+        "Name": "Факультет информационных технологий",
+        "ShortName": "ИТ",
+        "Departments": []
+      },
+      "Students": []
+    },
+    "Grades": [],
+    "Attendances": []
+  },
+  {
+    "Id": 14,
+    "LastName": "Петрова",
+    "FirstName": "Анна",
+    "MiddleName": "Игоревна",
+    "BirthDate": "2004-07-25T00:00:00",
+    "RecordBookNumber": "ИТ-21-002",
+    "Email": "petrova@university.ru",
+    "Phone": "\u002B7-900-222-33-44",
+    "EnrolledDate": "2022-09-01T00:00:00",
+    "Status": 0,
+    "GroupId": 1,
+    "Group": {
+      "Id": 1,
+      "Name": "ИТ-21",
+      "CreatedYear": 2022,
+      "FacultyId": 1,
+      "Faculty": {
+        "Id": 1,
+        "Name": "Факультет информационных технологий",
+        "ShortName": "ИТ",
+        "Departments": []
+      },
+      "Students": []
+    },
+    "Grades": [],
+    "Attendances": []
+  },
+  {
+    "Id": 15,
+    "LastName": "Сидоров",
+    "FirstName": "Олег",
+    "MiddleName": null,
+    "BirthDate": "2005-01-08T00:00:00",
+    "RecordBookNumber": "ЭК-21-002",
+    "Email": "sidorov@university.ru",
+    "Phone": null,
+    "EnrolledDate": "2023-09-01T00:00:00",
+    "Status": 2,
+    "GroupId": 3,
+    "Group": {
+      "Id": 2,
+      "Name": "ИТ-22",
+      "CreatedYear": 2023,
+      "FacultyId": 1,
+      "Faculty": {
+        "Id": 1,
+        "Name": "Факультет информационных технологий",
+        "ShortName": "ИТ",
+        "Departments": []
+      },
+      "Students": []
+    },
+    "Grades": [],
+    "Attendances": []
+  },
+  {
+    "Id": 16,
+    "LastName": "Кузнецова",
+    "FirstName": "Мария",
+    "MiddleName": "Андреевна",
+    "BirthDate": "2003-11-30T00:00:00",
+    "RecordBookNumber": "ЭК-21-001",
+    "Email": "kuznetsova@university.ru",
+    "Phone": "\u002B7-900-333-44-55",
+    "EnrolledDate": "2022-09-01T00:00:00",
+    "Status": 1,
+    "GroupId": 3,
+    "Group": {
+      "Id": 3,
+      "Name": "ЭК-21",
+      "CreatedYear": 2022,
+      "FacultyId": 2,
+      "Faculty": {
+        "Id": 2,
+        "Name": "Экономический факультет",
+        "ShortName": "ЭК",
+        "Departments": []
+      },
+      "Students": []
+    },
+    "Grades": [],
+    "Attendances": []
   }
 ]
