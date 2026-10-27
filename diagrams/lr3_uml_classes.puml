@@ -1,0 +1,185 @@
+@startuml
+skinparam dpi 150
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+title UML-диаграмма классов ИС «Учёт студентов» (14 классов/интерфейсов)
+
+interface IEntity <<interface>> {
+  + Id : int
+}
+
+interface IRepository<T> <<interface>> {
+  + GetAll() : IReadOnlyList<T>
+  + GetById(id : int) : T?
+  + Find(predicate : Func<T, bool>) : IReadOnlyList<T>
+  + Add(entity : T) : T
+  + Update(entity : T) : bool
+  + Delete(id : int) : bool
+  + Save() : void
+}
+
+class InMemoryRepository<T> {
+  - _items : List<T>
+  + Add(entity : T) : T
+}
+
+class JsonRepository<T> {
+  - _filePath : string
+  - _items : List<T>
+  - Load() : List<T>
+  + Save() : void
+}
+
+class UniversityContext {
+  + Faculties : List<Faculty>
+  + Departments : List<Department>
+  + Groups : List<Group>
+  + Students : List<Student>
+  + Teachers : List<Teacher>
+  + Disciplines : List<Discipline>
+  + Curriculums : List<Curriculum>
+  + Grades : List<Grade>
+  + Lessons : List<Lesson>
+  + Attendances : List<Attendance>
+  + {static} CreateSeeded() : UniversityContext
+}
+
+class Faculty {
+  + Id : int
+  + Name : string
+  + ShortName : string
+}
+class Department {
+  + Id : int
+  + Name : string
+  + FacultyId : int
+}
+class Group {
+  + Id : int
+  + Name : string
+  + CreatedYear : int
+  + FacultyId : int
+}
+class Student {
+  + Id : int
+  + LastName : string
+  + FirstName : string
+  + MiddleName : string?
+  + BirthDate : DateTime
+  + RecordBookNumber : string
+  + Email : string
+  + Phone : string?
+  + EnrolledDate : DateTime
+  + Status : StudentStatus
+  + GroupId : int
+  + FullName() : string
+}
+class Teacher {
+  + Id : int
+  + LastName : string
+  + FirstName : string
+  + Position : string
+  + Email : string
+  + DepartmentId : int
+}
+class Discipline {
+  + Id : int
+  + Name : string
+  + TotalHours : int
+  + AssessmentType : AssessmentType
+}
+class Curriculum {
+  + Id : int
+  + GroupId : int
+  + DisciplineId : int
+  + Semester : int
+  + Hours : int
+}
+class Lesson {
+  + Id : int
+  + DisciplineId : int
+  + GroupId : int
+  + TeacherId : int
+  + StartTime : DateTime
+  + DurationHours : int
+  + Room : string
+}
+class Grade {
+  + Id : int
+  + StudentId : int
+  + DisciplineId : int
+  + TeacherId : int
+  + Value : int
+  + Semester : int
+  + Date : DateTime
+}
+class Attendance {
+  + Id : int
+  + StudentId : int
+  + LessonId : int
+  + IsPresent : bool
+  + Reason : string?
+}
+
+class StudentService {
+  - _students : IRepository<Student>
+  - _groups : IRepository<Group>
+  + GetAll() : IReadOnlyList<Student>
+  + GetById(id : int) : Student?
+  + GetByGroup(groupId : int) : IReadOnlyList<Student>
+  + SearchByLastName(prefix : string) : IReadOnlyList<Student>
+  + Enroll(lastName, firstName, middleName, email, birthDate, groupId) : Student
+  + Transfer(studentId, targetGroupId) : bool
+  + Expel(studentId, reason) : bool
+}
+
+class ProgressService {
+  - _students : IRepository<Student>
+  - _grades : IRepository<Grade>
+  - _attendances : IRepository<Attendance>
+  + GetGrades(studentId) : IReadOnlyList<(Discipline, int)>
+  + GetAverageGrade(studentId) : double
+  + GetGroupAverageGrade(groupId) : double
+  + GetAttendanceRate(studentId) : double
+  + IsExcellent(studentId) : bool
+}
+
+' ---------- связи: наследование и реализация ----------
+IEntity <|.. Student
+IEntity <|.. Group
+IEntity <|.. Grade
+IEntity <|.. Attendance
+IRepository <|.. InMemoryRepository
+IRepository <|.. JsonRepository
+
+' ---------- композиции (владение жизненным циклом) ----------
+UniversityContext *-- "0..*" Faculty
+UniversityContext *-- "0..*" Group
+UniversityContext *-- "0..*" Student : композиция
+UniversityContext *-- "0..*" Lesson
+UniversityContext *-- "0..*" Grade
+
+' ---------- агрегации ----------
+Faculty o-- "0..*" Department : кафедры
+Group o-- "0..*" Student : студенты
+Department o-- "0..*" Teacher
+Lesson o-- "0..*" Attendance : отметки
+
+' ---------- ассоциации ----------
+Faculty "1" -- "0..*" Group : содержит
+Group "1" -- "0..*" Curriculum : учебный план
+Discipline "1" -- "0..*" Curriculum : изучается
+Discipline "1" -- "0..*" Lesson : проводится
+Teacher "1" -- "0..*" Lesson : преподаёт
+Student "1" -- "0..*" Grade : получает
+Discipline "1" -- "0..*" Grade : оценивается
+Student "1" -- "0..*" Attendance : посещаемость
+Lesson "1" -- "0..*" Attendance : за занятие
+
+' ---------- сервисы зависят от абстракций ----------
+StudentService ..> IRepository : использует
+ProgressService ..> IRepository : использует
+StudentService ..> Student : оперирует
+ProgressService ..> Grade : анализирует
+UniversityContext ..> Student : формирует данные
+@enduml
