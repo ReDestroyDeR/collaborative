@@ -1,3 +1,4 @@
+using StudentAccounting.Bll.Scholarship;
 using StudentAccounting.Bll.Services;
 using StudentAccounting.Dal.Entities;
 using StudentAccounting.Dal.Repositories;
@@ -82,13 +83,21 @@ public static class Program
         }
         Console.WriteLine();
 
-        Console.WriteLine("7. Расчёт стипендии (исходный монолитный модуль ScholarshipReportGenerator):");
-        var legacy = new StudentAccounting.Bll.Legacy.ScholarshipReportGenerator(
-            studentService.GetAll().ToList(),
-            gradeRepository.GetAll().ToList());
-        Console.Write(legacy.GenerateTextReport(1));
+        Console.WriteLine("7. Расчёт стипендий (ScholarshipService — после рефакторинга):");
+        var csvService = new ScholarshipService(studentRepository, groupRepository, gradeRepository,
+            new StandardScholarshipPolicy(), new CsvReportExporter());
+        var report = csvService.BuildReport(1);
+        Console.WriteLine("   Отчёт в формате CSV:");
+        Console.Write("   " + csvService.Export(report).Replace("\n", "\n   "));
+
+        var mdService = new ScholarshipService(studentRepository, groupRepository, gradeRepository,
+            new StandardScholarshipPolicy(), new MarkdownReportExporter());
+        Console.WriteLine("   Отчёт в формате Markdown (группа ИТ-22):");
+        Console.Write("   " + mdService.Export(mdService.BuildReport(2)).Replace("\n", "\n   "));
         Console.WriteLine();
-        Console.WriteLine("   CSV-вариант:");
-        Console.Write("   " + legacy.GenerateCsvReport(1).Replace("\n", "\n   "));
+
+        Console.WriteLine("   Попытка построить отчёт по несуществующей группе Id=99:");
+        var ok = csvService.TryBuildReport(99, out var failedReport, out var error);
+        Console.WriteLine($"   TryBuildReport -> {ok}, отчёт = {(failedReport is null ? "null" : "не null")}, ошибка: {error}");
     }
 }
