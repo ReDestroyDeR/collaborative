@@ -58,6 +58,7 @@ public static class Program
 
         Console.WriteLine("5. Сериализация в JSON (JsonRepository<Student>):");
         var jsonPath = Path.Combine(dataDir, "students.json");
+        if (File.Exists(jsonPath)) File.Delete(jsonPath);
         var jsonRepository = new JsonRepository<Student>(jsonPath);
         foreach (var s in studentService.GetAll())
             jsonRepository.Add(s);

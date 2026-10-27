@@ -10,3 +10,6 @@ coverage/
 # методические материалы (не часть проекта)
 /Laboratornaya rabota*.doc
 /Obrazets oformleniya otcheta.docx
+
+# данные, формируемые при запуске приложения
+/src/data/

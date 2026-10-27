@@ -33,8 +33,15 @@ public class InMemoryRepository<T> : IRepository<T> where T : class, IEntity
 
     public T Add(T entity)
     {
-        if (entity.Id == 0 || GetById(entity.Id) is not null)
+        if (entity.Id == 0)
+        {
             entity.Id = _items.Count == 0 ? 1 : _items.Max(item => item.Id) + 1;
+        }
+        else if (GetById(entity.Id) is not null)
+        {
+            throw new InvalidOperationException(
+                $"Сущность {typeof(T).Name} с ключом {entity.Id} уже существует");
+        }
         lock (_lock) _items.Add(entity);
         return entity;
     }
