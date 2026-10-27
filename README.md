@@ -12,12 +12,15 @@
 ```
 StudentAccounting.sln
 ├── src/
-│   ├── StudentAccounting.Dal/   # слой доступа к данным (DAL): сущности и хранилище
-│   ├── StudentAccounting.Bll/   # слой бизнес-логики (BLL): сервисы предметной области
-│   └── StudentAccounting.Ui/    # слой пользовательского интерфейса (UI): консольное приложение
-├── tests/                       # модульные тесты (добавляются в ЛР4)
-├── diagrams/                    # PlantUML-диаграммы (ER, UML, IDEF0, компоненты)
-└── отчеты/                      # отчёты по лабораторным работам (.docx)
+│   ├── StudentAccounting.Dal/   # слой доступа к данным (DAL): сущности, IRepository, хранилища
+│   ├── StudentAccounting.Bll/   # слой бизнес-логики (BLL): сервисы, модуль стипендий
+│   ├── StudentAccounting.Ui/    # слой пользовательского интерфейса (UI): консольное приложение
+│   └── InterfacesDemo/          # ЛР2: демонстрация интерфейсов C# (4 задания)
+├── tests/
+│   └── StudentAccounting.Tests/ # ЛР4: модульные тесты xUnit + Moq, 100 % покрытие ветвей
+├── diagrams/                    # диаграммы: ER, UML, IDEF0, компоненты (PlantUML/matplotlib)
+├── отчеты/                      # отчёты по лабораторным работам (.docx)
+└── .github/workflows/ci.yml     # CI GitHub Actions: build + test + coverage
 ```
 
 ## Сборка и запуск
@@ -25,6 +28,9 @@ StudentAccounting.sln
 ```bash
 dotnet build
 dotnet run --project src/StudentAccounting.Ui
+dotnet run --project src/InterfacesDemo
+dotnet test                                   # 100 тестов
+dotnet test --collect:"XPlat Code Coverage"   # измерение покрытия (100 % строк и ветвей)
 ```
 
 ## Инструменты
@@ -34,3 +40,10 @@ dotnet run --project src/StudentAccounting.Ui
 - Диаграммы: PlantUML
 - Система контроля версий: Git (GitHub)
 - CI: GitHub Actions (`.github/workflows/ci.yml`)
+
+## Непрерывная интеграция
+
+`.github/workflows/ci.yml`: restore → build (Release) → test → покрытие кода.
+Запускается при каждом push в main/develop/feature-ветки и при каждом pull request.
+Рекомендуемая защита ветки main: Settings → Branches → Require a pull request before
+merging + Require status checks (CI / build-and-test).
