@@ -1,0 +1,32 @@
+@startuml
+skinparam dpi 150
+left to right direction
+title Диаграмма вариантов использования ИС «Учёт студентов»
+
+actor "Сотрудник\nдеканата" as dekanat
+actor "Преподаватель" as teacher
+actor "Администратор\nсистемы" as admin
+
+rectangle "ИС «Учёт студентов»" {
+  usecase "Учёт студентов\nи групп" as uc1
+  usecase "Зачисление студента" as uc2
+  usecase "Перевод / отчисление" as uc3
+  usecase "Ведение расписания\nзанятий" as uc4
+  usecase "Отметка посещаемости" as uc5
+  usecase "Выставление оценок" as uc6
+  usecase "Расчёт успеваемости\nи среднего балла" as uc7
+  usecase "Формирование отчётов" as uc8
+  usecase "Резервное копирование\nданных" as uc9
+}
+
+dekanat --> uc1
+dekanat --> uc2
+dekanat --> uc3
+dekanat --> uc7
+dekanat --> uc8
+teacher --> uc4
+teacher --> uc5
+teacher --> uc6
+admin --> uc9
+admin --> uc1
+@enduml

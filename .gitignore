@@ -1,0 +1,12 @@
+bin/
+obj/
+*.user
+.vs/
+.idea/
+TestResults/
+coverage/
+*.binlog
+
+# методические материалы (не часть проекта)
+/Laboratornaya rabota*.doc
+/Obrazets oformleniya otcheta.docx

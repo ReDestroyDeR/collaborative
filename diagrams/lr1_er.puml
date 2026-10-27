@@ -1,0 +1,123 @@
+@startuml
+skinparam dpi 150
+hide circle
+skinparam linetype ortho
+skinparam entity {
+  BackgroundColor #FDFDFD
+  BorderColor #333333
+}
+title ER-диаграмма БД ИС «Учёт студентов» (10 сущностей)
+
+entity "FACULTY" as faculty {
+  * id : int <<PK>>
+  --
+  * name : nvarchar(200)
+  * short_name : nvarchar(20)
+}
+
+entity "DEPARTMENT" as department {
+  * id : int <<PK>>
+  --
+  * name : nvarchar(200)
+  * faculty_id : int <<FK>>
+}
+
+entity "GROUP" as group {
+  * id : int <<PK>>
+  --
+  * name : nvarchar(30)
+  * created_year : int
+  * faculty_id : int <<FK>>
+}
+
+entity "STUDENT" as student {
+  * id : int <<PK>>
+  --
+  * last_name : nvarchar(100)
+  * first_name : nvarchar(100)
+  middle_name : nvarchar(100)
+  * birth_date : date
+  * record_book_number : nvarchar(30)
+  * email : nvarchar(150)
+  phone : nvarchar(30)
+  * enrolled_date : date
+  * status : tinyint
+  * group_id : int <<FK>>
+}
+
+entity "TEACHER" as teacher {
+  * id : int <<PK>>
+  --
+  * last_name : nvarchar(100)
+  * first_name : nvarchar(100)
+  middle_name : nvarchar(100)
+  * position : nvarchar(100)
+  * email : nvarchar(150)
+  * department_id : int <<FK>>
+}
+
+entity "DISCIPLINE" as discipline {
+  * id : int <<PK>>
+  --
+  * name : nvarchar(200)
+  * total_hours : int
+  * assessment_type : tinyint
+  * department_id : int <<FK>>
+}
+
+entity "CURRICULUM" as curriculum {
+  * id : int <<PK>>
+  --
+  * group_id : int <<FK>>
+  * discipline_id : int <<FK>>
+  * semester : int
+  * hours : int
+}
+
+entity "LESSON" as lesson {
+  * id : int <<PK>>
+  --
+  * discipline_id : int <<FK>>
+  * group_id : int <<FK>>
+  * teacher_id : int <<FK>>
+  * start_time : datetime
+  * duration_hours : int
+  * room : nvarchar(30)
+}
+
+entity "GRADE" as grade {
+  * id : int <<PK>>
+  --
+  * student_id : int <<FK>>
+  * discipline_id : int <<FK>>
+  * teacher_id : int <<FK>>
+  * value : int
+  * semester : int
+  * grade_date : date
+}
+
+entity "ATTENDANCE" as attendance {
+  * id : int <<PK>>
+  --
+  * student_id : int <<FK>>
+  * lesson_id : int <<FK>>
+  * is_present : bit
+  reason : nvarchar(200)
+}
+
+faculty ||--o{ department : "состоит из"
+department ||--o{ teacher : "работают"
+department ||--o{ discipline : "ведут"
+faculty ||--o{ group : "содержит"
+group ||--o{ student : "включает"
+group ||--o{ curriculum : "план"
+discipline ||--o{ curriculum : "изучается"
+discipline ||--o{ lesson : "проводится"
+group ||--o{ lesson : "посещает"
+teacher ||--o{ lesson : "преподаёт"
+student ||--o{ grade : "получает"
+discipline ||--o{ grade : "по"
+teacher ||--o{ grade : "выставляет"
+student ||--o{ attendance : "отмечается"
+lesson ||--o{ attendance : "за"
+@enduml

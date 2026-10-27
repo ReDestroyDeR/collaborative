@@ -1,0 +1,24 @@
+@startuml
+skinparam dpi 150
+skinparam componentStyle rectangle
+title Диаграмма компонентов (структура проекта ИС «Учёт студентов»)
+
+package "Решение StudentAccounting (.NET 8, Visual Studio 2022)" {
+  component "StudentAccounting.Ui" as ui {
+    [Program.cs\nконсольный интерфейс\n(слой UI)]
+  }
+  component "StudentAccounting.Bll" as bll {
+    [Services/\nStudentService\n(слой BLL)]
+  }
+  component "StudentAccounting.Dal" as dal {
+    [Entities/\nStudent, Group, Faculty,\nTeacher, Discipline, Grade,\nLesson, Attendance,\nCurriculum, Department]
+    [Storage/\nUniversityContext\n(хранилище данных)]
+  }
+}
+
+database "Хранилище данных\n(в памяти / JSON-файл)" as db
+
+ui --> bll : вызывает сервисы
+bll --> dal : читает/изменяет данные
+dal --> db : сериализация/загрузка
+@enduml
