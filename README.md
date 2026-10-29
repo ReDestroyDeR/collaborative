@@ -19,7 +19,6 @@ StudentAccounting.sln
 ├── tests/
 │   └── StudentAccounting.Tests/ # ЛР4: модульные тесты xUnit + Moq, 100 % покрытие ветвей
 ├── diagrams/                    # диаграммы: ER, UML, IDEF0, компоненты (PlantUML/matplotlib)
-├── отчеты/                      # отчёты по лабораторным работам (.docx)
 └── .github/workflows/ci.yml     # CI GitHub Actions: build + test + coverage
 ```
 
