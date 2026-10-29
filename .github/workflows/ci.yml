@@ -3,9 +3,9 @@ name: CI
 # Непрерывная интеграция: сборка и тестирование при каждом push и pull request
 on:
   push:
-    branches: [ main, develop, "feature/**" ]
+    branches: [ main, master, develop, "feature/**" ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, master, develop ]
 
 jobs:
   build-and-test:
